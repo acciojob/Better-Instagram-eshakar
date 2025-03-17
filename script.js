@@ -1,18 +1,28 @@
-//your code here
-// Select all images
+// Get the parent container
+const parent = document.getElementById('parent');
+// Get all image divs
 const images = document.querySelectorAll('.image');
-let draggedItem = null;
 
-// Assign IDs to the image divs (since they're missing in the HTML)
+// Assign proper IDs to each image div as required by the tests
 images.forEach((image, index) => {
-  image.id = `div${index + 1}`;
+  image.id = `drag${index + 1}`;
 });
 
-// Add event listeners for drag operations to each image
+// Variables to track dragged elements
+let draggedItem = null;
+let dragSource = null;
+
+// Add event listeners for drag operations
 images.forEach(image => {
   // When drag starts
   image.addEventListener('dragstart', function(e) {
     draggedItem = this;
+    dragSource = this;
+    
+    // Required for Firefox
+    e.dataTransfer.setData('text/plain', this.id);
+    
+    // Add visual feedback with delay (helps with rendering)
     setTimeout(() => {
       this.classList.add('selected');
     }, 0);
@@ -28,50 +38,47 @@ images.forEach(image => {
   
   // When dragging over a drop target
   image.addEventListener('dragover', function(e) {
+    // Prevent default to allow drop
     e.preventDefault();
   });
   
   // When entering a drop target
   image.addEventListener('dragenter', function(e) {
     e.preventDefault();
-    if (this !== draggedItem) {
+    if (this !== dragSource) {
       this.classList.add('selected');
     }
   });
   
   // When leaving a drop target
   image.addEventListener('dragleave', function() {
-    if (this !== draggedItem) {
+    if (this !== dragSource) {
       this.classList.remove('selected');
     }
   });
   
   // When dropping an item
-image.addEventListener('drop', function(e) {
-  e.preventDefault();
-  
-  if (this !== draggedItem) {
-    // Get the parent node of the drop target
-    const dropTargetParent = this.parentNode;
-
-    // Get the next sibling of the drop target
-    const dropTargetNextSibling = this.nextSibling;
-
-    // Get the parent node of the dragged item
-    const draggedItemParent = draggedItem.parentNode;
-
-    // Remove the dragged item and the drop target from their original positions
-    draggedItemParent.removeChild(draggedItem);
-    dropTargetParent.removeChild(this);
-
-    // Insert the dragged item to the drop target's original position
-    dropTargetParent.insertBefore(draggedItem, dropTargetNextSibling);
-
-    // Insert the drop target to the dragged item's original position
-    draggedItemParent.appendChild(this);
-
-    // Remove the selected class
+  image.addEventListener('drop', function(e) {
+    e.preventDefault();
+    
+    // Remove highlighting
     this.classList.remove('selected');
-  }
-});
+    
+    // Don't do anything if dropped on self
+    if (this === dragSource) return;
+    
+    // Get the background image of both elements
+    const draggedBackground = window.getComputedStyle(dragSource).backgroundImage;
+    const droppedOnBackground = window.getComputedStyle(this).backgroundImage;
+    
+    // Swap the background images
+    dragSource.style.backgroundImage = droppedOnBackground;
+    this.style.backgroundImage = draggedBackground;
+    
+    // Swap the text content too
+    const draggedText = dragSource.textContent;
+    const droppedText = this.textContent;
+    dragSource.textContent = droppedText;
+    this.textContent = draggedText;
+  });
 });
