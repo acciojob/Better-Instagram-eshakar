@@ -1,47 +1,40 @@
+document.addEventListener('DOMContentLoaded', function () {
+  const divs = document.querySelectorAll('.draggable');
 
-let dragindex = 0;
-let dropindex = 0;
-let clone = "";
+  divs.forEach(div => {
+    div.addEventListener('dragstart', dragStart);
+    div.addEventListener('dragover', dragOver);
+    div.addEventListener('drop', drop);
+  });
 
-const images = document.querySelectorAll(".image");
-
-function drag(e) {
-  e.dataTransfer.setData("text", e.target.id);
-}
-
-function allowDrop(e) {
-  e.preventDefault();
-}
-
-function drop(e) {
-  clone = e.target.cloneNode(true);
-  let data = e.dataTransfer.getData("text");
-  let nodelist = document.getElementById("parent").childNodes;
-  console.log(data, e.target.id);
-  for (let i = 0; i < nodelist.length; i++) {
-    if (nodelist[i].id == data) {
-      dragindex = i;
-    }
+  function dragStart(event) {
+    event.dataTransfer.setData('text/plain', event.target.id);
   }
 
-  dragdrop(clone);
+  function dragOver(event) {
+    event.preventDefault();
+  }
 
-  document
-    .getElementById("parent")
-    .replaceChild(document.getElementById(data), e.target);
-
-  document
-    .getElementById("parent")
-    .insertBefore(
-      clone,
-      document.getElementById("parent").childNodes[dragindex]
-    );
-}
-
-const dragdrop = (image) => {
-  image.ondragstart = drag;
-  image.ondragover = allowDrop;
-  image.ondrop = drop;
-};
-
-images.forEach(dragdrop);
+  function drop(event) {
+    event.preventDefault();
+  var draggedId = event.dataTransfer.getData('text/plain');
+  var draggedElement = document.getElementById(draggedId);
+  var targetElement = event.target;
+  
+  if (draggedElement && targetElement && draggedElement !== targetElement && targetElement.classList.contains('draggable')) {
+    var clonedDragged = draggedElement.cloneNode(true);
+    var clonedTarget = targetElement.cloneNode(true);
+    
+    targetElement.replaceWith(clonedDragged);
+    draggedElement.replaceWith(clonedTarget);
+    
+    clonedDragged.addEventListener('dragstart', dragStart);
+    clonedDragged.addEventListener('dragover', dragOver);
+    clonedDragged.addEventListener('drop', drop);
+    
+    clonedTarget.addEventListener('dragstart', dragStart);
+    clonedTarget.addEventListener('dragover', dragOver);
+    clonedTarget.addEventListener('drop', drop);
+  }
+  }
+});
