@@ -1,84 +1,47 @@
-// Get the parent container
-const parent = document.getElementById('parent');
-// Get all image divs
-const images = document.querySelectorAll('.image');
 
-// Assign proper IDs to each image div as required by the tests
-images.forEach((image, index) => {
-  image.id = `drag${index + 1}`;
-});
+let dragindex = 0;
+let dropindex = 0;
+let clone = "";
 
-// Variables to track dragged elements
-let draggedItem = null;
-let dragSource = null;
+const images = document.querySelectorAll(".image");
 
-// Add event listeners for drag operations
-images.forEach(image => {
-  // When drag starts
-  image.addEventListener('dragstart', function(e) {
-    draggedItem = this;
-    dragSource = this;
-    
-    // Required for Firefox
-    e.dataTransfer.setData('text/plain', this.id);
-    
-    // Add visual feedback with delay (helps with rendering)
-    setTimeout(() => {
-      this.classList.add('selected');
-    }, 0);
-  });
-  
-  // When drag ends
-  image.addEventListener('dragend', function() {
-    setTimeout(() => {
-      this.classList.remove('selected');
-      draggedItem = null;
-    }, 0);
-  });
-  
-  // When dragging over a drop target
-  image.addEventListener('dragover', function(e) {
-    // Prevent default to allow drop
-    e.preventDefault();
-  });
-  
-  // When entering a drop target
-  image.addEventListener('dragenter', function(e) {
-    e.preventDefault();
-    if (this !== dragSource) {
-      this.classList.add('selected');
+function drag(e) {
+  e.dataTransfer.setData("text", e.target.id);
+}
+
+function allowDrop(e) {
+  e.preventDefault();
+}
+
+function drop(e) {
+  clone = e.target.cloneNode(true);
+  let data = e.dataTransfer.getData("text");
+  let nodelist = document.getElementById("parent").childNodes;
+  console.log(data, e.target.id);
+  for (let i = 0; i < nodelist.length; i++) {
+    if (nodelist[i].id == data) {
+      dragindex = i;
     }
-  });
-  
-  // When leaving a drop target
-  image.addEventListener('dragleave', function() {
-    if (this !== dragSource) {
-      this.classList.remove('selected');
-    }
-  });
-  
-  // When dropping an item
-  image.addEventListener('drop', function(e) {
-    e.preventDefault();
-    
-    // Remove highlighting
-    this.classList.remove('selected');
-    
-    // Don't do anything if dropped on self
-    if (this === dragSource) return;
-    
-    // Get the background image of both elements
-    const draggedBackground = window.getComputedStyle(dragSource).backgroundImage;
-    const droppedOnBackground = window.getComputedStyle(this).backgroundImage;
-    
-    // Swap the background images
-    dragSource.style.backgroundImage = droppedOnBackground;
-    this.style.backgroundImage = draggedBackground;
-    
-    // Swap the text content too
-    const draggedText = dragSource.textContent;
-    const droppedText = this.textContent;
-    dragSource.textContent = droppedText;
-    this.textContent = draggedText;
-  });
-});
+  }
+
+  dragdrop(clone);
+
+  document
+    .getElementById("parent")
+    .replaceChild(document.getElementById(data), e.target);
+
+  document
+    .getElementById("parent")
+    .insertBefore(
+      clone,
+      document.getElementById("parent").childNodes[dragindex]
+    );
+}
+
+const dragdrop = (image) => {
+  image.ondragstart = drag;
+  image.ondragover = allowDrop;
+  image.ondrop = drop;
+};
+
+images.forEach(dragdrop);
