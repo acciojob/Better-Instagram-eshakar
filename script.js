@@ -47,26 +47,31 @@ images.forEach(image => {
   });
   
   // When dropping an item
-  image.addEventListener('drop', function(e) {
-    e.preventDefault();
-    
-    if (this !== draggedItem) {
-      // Get the background image of both elements
-      const draggedBackground = window.getComputedStyle(draggedItem).backgroundImage;
-      const droppedOnBackground = window.getComputedStyle(this).backgroundImage;
-      
-      // Swap the background images
-      draggedItem.style.backgroundImage = droppedOnBackground;
-      this.style.backgroundImage = draggedBackground;
-      
-      // Swap the text content too
-      const draggedText = draggedItem.textContent;
-      const droppedText = this.textContent;
-      draggedItem.textContent = droppedText;
-      this.textContent = draggedText;
-      
-      // Remove the selected class
-      this.classList.remove('selected');
-    }
-  });
+image.addEventListener('drop', function(e) {
+  e.preventDefault();
+  
+  if (this !== draggedItem) {
+    // Get the parent node of the drop target
+    const dropTargetParent = this.parentNode;
+
+    // Get the next sibling of the drop target
+    const dropTargetNextSibling = this.nextSibling;
+
+    // Get the parent node of the dragged item
+    const draggedItemParent = draggedItem.parentNode;
+
+    // Remove the dragged item and the drop target from their original positions
+    draggedItemParent.removeChild(draggedItem);
+    dropTargetParent.removeChild(this);
+
+    // Insert the dragged item to the drop target's original position
+    dropTargetParent.insertBefore(draggedItem, dropTargetNextSibling);
+
+    // Insert the drop target to the dragged item's original position
+    draggedItemParent.appendChild(this);
+
+    // Remove the selected class
+    this.classList.remove('selected');
+  }
+});
 });
