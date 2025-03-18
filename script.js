@@ -1,76 +1,71 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const images = document.querySelectorAll(".image");
-  let draggedItem = null;
+// Select all images
+const images = document.querySelectorAll('.image');
+let draggedItem = null;
 
-  // Set background images correctly
-  const imageURLs = [
-    "https://picsum.photos/id/237/200/300",
-    "https://picsum.photos/seed/picsum/200/300",
-    "https://picsum.photos/200/300?grayscale",
-    "https://picsum.photos/200/300/",
-    "https://picsum.photos/200/300.jpg",
-    "https://picsum.photos/id/102/200/300"
-  ];
+// Assign IDs to the image divs (since they're missing in the HTML)
+images.forEach((image, index) => {
+  image.id = `drag${index + 1}`;
+});
 
-  images.forEach((image, index) => {
-    image.style.backgroundImage = `url(${imageURLs[index]})`;
+// Add event listeners for drag operations to each image
+images.forEach(image => {
+  // When drag starts
+  image.addEventListener('dragstart', function(e) {
+    draggedItem = this;
+    setTimeout(() => {  // Fixed: setTimeOut -> setTimeout
+      this.classList.add('selected');
+    }, 0);
   });
 
-  // Drag start
-  images.forEach((image) => {
-    image.addEventListener("dragstart", function (e) {
-      draggedItem = this;
-      setTimeout(() => this.classList.add("selected"), 0);
-    });
+  // When drag ends
+  image.addEventListener('dragend', function() {
+    setTimeout(() => {  // Fixed: setTimeOut -> setTimeout
+      this.classList.remove('selected');
+      draggedItem = null;
+    }, 0);
+  });
 
-    // Drag end
-    image.addEventListener("dragend", function () {
-      setTimeout(() => {
-        this.classList.remove("selected");
-        draggedItem = null;
-      }, 0);
-    });
+  // When dragging over a drop target
+  image.addEventListener('dragover', function(e) {
+    e.preventDefault();
+  });
 
-    // Drag over
-    image.addEventListener("dragover", function (e) {
-      e.preventDefault();
-    });
+  // When entering a drop target
+  image.addEventListener('dragenter', function(e) {
+    e.preventDefault();
+    if (this !== draggedItem) {
+      this.classList.add('selected');
+    }
+  });
 
-    // Drag enter
-    image.addEventListener("dragenter", function (e) {
-      e.preventDefault();
-      if (this !== draggedItem) {
-        this.classList.add("selected");
-      }
-    });
+  // When leaving a drop target
+  image.addEventListener('dragleave', function() {
+    if (this !== draggedItem) {
+      this.classList.remove('selected');
+    }
+  });
 
-    // Drag leave
-    image.addEventListener("dragleave", function () {
-      if (this !== draggedItem) {
-        this.classList.remove("selected");
-      }
-    });
+  // When dropping an item
+  image.addEventListener('drop', function(e) {
+    e.preventDefault();
 
-    // Drop
-    image.addEventListener("drop", function (e) {
-      e.preventDefault();
-
-      if (!draggedItem || this === draggedItem) return;
-
-      // Swap background images
-      let draggedBackground = draggedItem.style.backgroundImage;
-      let droppedOnBackground = this.style.backgroundImage;
+    if (this !== draggedItem) {
+      // Get the background image of both elements
+      const draggedBackground = window.getComputedStyle(draggedItem).backgroundImage;
+      const droppedOnBackground = window.getComputedStyle(this).backgroundImage;
+      
+      // Swap the background images
       draggedItem.style.backgroundImage = droppedOnBackground;
       this.style.backgroundImage = draggedBackground;
-
-      // Swap text content
-      let draggedText = draggedItem.textContent;
-      let droppedText = this.textContent;
+      
+      // Swap the text content too
+      const draggedText = draggedItem.textContent;
+      const droppedText = this.textContent;
       draggedItem.textContent = droppedText;
       this.textContent = draggedText;
-
-      // Remove highlight
-      this.classList.remove("selected");
-    });
+      
+      // Remove the selected class
+      this.classList.remove('selected');
+    }
   });
 });
