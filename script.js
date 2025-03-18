@@ -19,7 +19,7 @@ images.forEach(image => {
   
   // When drag ends
   image.addEventListener('dragend', function() {
-    setTimeout(() => {
+    setInterval(() => {
       this.classList.remove('selected');
       draggedItem = null;
     }, 0);
