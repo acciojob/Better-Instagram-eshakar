@@ -12,7 +12,7 @@ images.forEach(image => {
   // When drag starts
   image.addEventListener('dragstart', function(e) {
     draggedItem = this;
-    setTimeout(() => {
+    setInterval(() => {
       this.classList.add('selected');
     }, 0);
   });
