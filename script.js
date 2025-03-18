@@ -1,71 +1,38 @@
-// Select all images
-const images = document.querySelectorAll('.image');
-let draggedItem = null;
+const images = document.querySelectorAll("img");
 
-// Assign IDs to the image divs (since they're missing in the HTML)
-images.forEach((image, index) => {
-  image.id = `drag${index + 1}`;
+images.forEach(img => {
+    img.addEventListener("dragstart", dragStart);
+    img.addEventListener("dragover", dragOver);
+    img.addEventListener("drop", drop);
+    img.addEventListener("dragenter", preventDefault);
+    img.addEventListener("dragleave", preventDefault);
 });
 
-// Add event listeners for drag operations to each image
-images.forEach(image => {
-  // When drag starts
-  image.addEventListener('dragstart', function(e) {
-    draggedItem = this;
-    setTimeout(() => {  // Fixed: setTimeOut -> setTimeout
-      this.classList.add('selected');
-    }, 0);
-  });
+let dragSource = null;
 
-  // When drag ends
-  image.addEventListener('dragend', function() {
-    setTimeout(() => {  // Fixed: setTimeOut -> setTimeout
-      this.classList.remove('selected');
-      draggedItem = null;
-    }, 0);
-  });
+function dragStart(e) {
+    dragSource = this;
+    e.dataTransfer.setData("text/plain", this.id);
+}
 
-  // When dragging over a drop target
-  image.addEventListener('dragover', function(e) {
+function dragOver(e) {
     e.preventDefault();
-  });
+}
 
-  // When entering a drop target
-  image.addEventListener('dragenter', function(e) {
+function drop(e) {
     e.preventDefault();
-    if (this !== draggedItem) {
-      this.classList.add('selected');
-    }
-  });
+    const dragTarget = this;
 
-  // When leaving a drop target
-  image.addEventListener('dragleave', function() {
-    if (this !== draggedItem) {
-      this.classList.remove('selected');
-    }
-  });
+    if (dragSource && dragSource !== dragTarget) {
+        // Swap images
+        const sourceParent = dragSource.parentNode;
+        const targetParent = dragTarget.parentNode;
 
-  // When dropping an item
-  image.addEventListener('drop', function(e) {
+        targetParent.replaceChild(dragSource, dragTarget);
+        sourceParent.appendChild(dragTarget);
+    }
+}
+
+function preventDefault(e) {
     e.preventDefault();
-
-    if (this !== draggedItem) {
-      // Get the background image of both elements
-      const draggedBackground = window.getComputedStyle(draggedItem).backgroundImage;
-      const droppedOnBackground = window.getComputedStyle(this).backgroundImage;
-      
-      // Swap the background images
-      draggedItem.style.backgroundImage = droppedOnBackground;
-      this.style.backgroundImage = draggedBackground;
-      
-      // Swap the text content too
-      const draggedText = draggedItem.textContent;
-      const droppedText = this.textContent;
-      draggedItem.textContent = droppedText;
-      this.textContent = draggedText;
-      
-      // Remove the selected class
-      this.classList.remove('selected');
-    }
-  });
-});
+}
