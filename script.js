@@ -12,24 +12,24 @@ images.forEach(image => {
   // When drag starts
   image.addEventListener('dragstart', function(e) {
     draggedItem = this;
-    setInterval(() => {
+    setTimeout(() => {  // Fixed: setTimeOut -> setTimeout
       this.classList.add('selected');
     }, 0);
   });
-  
+
   // When drag ends
   image.addEventListener('dragend', function() {
-    setInterval(() => {
+    setTimeout(() => {  // Fixed: setTimeOut -> setTimeout
       this.classList.remove('selected');
       draggedItem = null;
     }, 0);
   });
-  
+
   // When dragging over a drop target
   image.addEventListener('dragover', function(e) {
     e.preventDefault();
   });
-  
+
   // When entering a drop target
   image.addEventListener('dragenter', function(e) {
     e.preventDefault();
@@ -37,18 +37,18 @@ images.forEach(image => {
       this.classList.add('selected');
     }
   });
-  
+
   // When leaving a drop target
   image.addEventListener('dragleave', function() {
     if (this !== draggedItem) {
       this.classList.remove('selected');
     }
   });
-  
+
   // When dropping an item
   image.addEventListener('drop', function(e) {
     e.preventDefault();
-    
+
     if (this !== draggedItem) {
       // Get the background image of both elements
       const draggedBackground = window.getComputedStyle(draggedItem).backgroundImage;
