@@ -1,59 +1,43 @@
-#drag1 {
+#div1 {
   background-image: url("https://picsum.photos/id/237/200/300");
   height: 300px;
   width: 200px;
   margin: 20px;
-  background-size: cover;
 }
 
-#drag2 {
+#div2 {
   background-image: url("https://picsum.photos/seed/picsum/200/300");
   height: 300px;
   width: 200px;
   margin: 20px;
-  background-size: cover;
 }
 
-#drag3 {
+#div3 {
   background-image: url("https://picsum.photos/200/300?grayscale");
   height: 300px;
   width: 200px;
   margin: 20px;
-  background-size: cover;
 }
 
-#drag4 {
+#div4 {
   background-image: url("https://picsum.photos/200/300/");
   height: 300px;
   width: 200px;
   margin: 20px;
-  background-size: cover;
 }
 
-#drag5 {
+#div5 {
   background-image: url("https://picsum.photos/200/300.jpg");
   height: 300px;
   width: 200px;
   margin: 20px;
-  background-size: cover;
 }
 
-#drag6 {
+#div6 {
   background-image: url("https://picsum.photos/id/102/200/300");
   height: 300px;
   width: 200px;
   margin: 20px;
-  background-size: cover;
-}
-
-.image {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-weight: bold;
-  text-shadow: 1px 1px 3px black;
-  cursor: move;
 }
 
 div.container {
@@ -62,7 +46,6 @@ div.container {
 
 .flex {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
 }
