@@ -2,24 +2,22 @@
 const images = document.querySelectorAll('.image');
 let draggedItem = null;
 
-// Assign IDs to the image divs (since they're missing in the HTML)
-images.forEach((image, index) => {
-  image.id = `div${index + 1}`;
-});
+// DO NOT reassign IDs since they're already set in HTML
+// Instead, we'll just use the existing IDs
 
 // Add event listeners for drag operations to each image
 images.forEach(image => {
   // When drag starts
   image.addEventListener('dragstart', function(e) {
     draggedItem = this;
-    setTimeout(() => {  // Fixed: setTimeOut -> setTimeout
+    setTimeout(() => {
       this.classList.add('selected');
     }, 0);
   });
 
   // When drag ends
   image.addEventListener('dragend', function() {
-    setTimeout(() => {  // Fixed: setTimeOut -> setTimeout
+    setTimeout(() => {
       this.classList.remove('selected');
       draggedItem = null;
     }, 0);
